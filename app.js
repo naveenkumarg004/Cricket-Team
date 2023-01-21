@@ -36,20 +36,21 @@ const convertDbObjectToResponseObject = (dbObject) => {
 };
 
 app.get("/players/", async (request, response) => {
-const getPlayersQuery = `
+  const getPlayersQuery = `
  SELECT
  *
  FROM
  cricket_team;`;
-const playersArray = await database.all(getPlayersQuery);
- response.send(
- playersArray.map((eachPlayer) =>
-convertDbObjectToResponseObject(eachPlayer))
-);
+  const playersArray = await db.all(getPlayersQuery);
+  response.send(
+    playersArray.map((eachPlayer) =>
+      convertDbObjectToResponseObject(eachPlayer)
+    )
+  );
 });
 
 //Add Player API 2
-app.post("/player/", async (request, response) => {
+app.post("/players/", async (request, response) => {
   const playerDetails = request.body;
   const { playerName, jerseyNumber, role } = playerDetails;
 
@@ -57,9 +58,9 @@ app.post("/player/", async (request, response) => {
   insert into
   cricket_team (player_name, jersey_number, role)
   values
-  ( `${playerName}` ,
+  ( '${playerName}' ,
     ${jerseyNumber} ,
-    `${role}` ,
+    '${role}' 
   ) `;
   const dbResponse = await db.run(addPlayerQuery);
   response.send("Player Added to Team");
@@ -67,40 +68,40 @@ app.post("/player/", async (request, response) => {
 
 //GET PlayerBYId API 3
 
-app.get("/players/:playerId/", (request, response)=>{
-  const {playerId} = request.params
+app.get("/players/:playerId/", async (request, response) => {
+  const { playerId } = request.params;
   const getPlayerQuery = `
   select *
   from cricket_team 
-  where played_id = ${playerId}`
-  const playerDetail = await db.get(getPlayerQuery)
-  response.send(convertDbObjectToResponseObject(playerDetail))
-  
-  )
+  where player_id = ${playerId}`;
+  const playerDetail = await db.get(getPlayerQuery);
+  response.send(convertDbObjectToResponseObject(playerDetail));
+});
 
 //UPDATE PUT playerDetails API 4
-  app.put("/players/:playerId/" , async (request, response) =>{
-    const {playerId} = request.params
-    const playerDetail = request.body
-    const {"playerName , jerseyNumber , role} = playerDetail
-    const updatePlayerQuery = `
+app.put("/players/:playerId/", async (request, response) => {
+  const { playerId } = request.params;
+  const playerDetails = request.body;
+  const { playerName, jerseyNumber, role } = playerDetails;
+  const updatePlayerQuery = `
     update cricket_team 
-    set player_name = `${playerName}`,
+    set player_name = '${playerName}',
         jersey_number = ${jerseyNumber} ,
-        role = ${role} 
-     where player_id = ${playerId}` 
-    await db.run(updatePlayerQuery)
-    response.send("Player Details Added"
-    })
+        role = '${role}' 
+     where player_id = ${playerId}`;
+  await db.run(updatePlayerQuery);
+  response.send("Player Details Updated");
+});
 
 //DELETE API 5
-app.delete("/players/:playerId/" , async(request, response) =>{
-  const {playerId} = request.params
+app.delete("/players/:playerId/", async (request, response) => {
+  const { playerId } = request.params;
   const delPlayerQuery = `
   delete from
   cricket_team
-  where player_id = ${playerId}`
-  await db.run(delPlayerQuery)
-  response.send("Player Removed")
-})
-module.exports = app ;
+  where player_id = ${playerId}`;
+  await db.run(delPlayerQuery);
+  response.send("Player Removed");
+});
+
+module.exports = app;

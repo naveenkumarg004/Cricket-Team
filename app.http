@@ -2,7 +2,7 @@ GET http://localhost:3000/players/
 
 ###
 POST http://localhost:3000/players/
-Content-Type : application/json
+Content-Type: application/json
 
 {
   "playerName": "Vishal",
@@ -23,4 +23,4 @@ Content-Type: application/json
   "role": "All-rounder"
 }
 ###
-DELETE http://localhost:3000/players/12/
+DELETE http://localhost:3000/players/10/
